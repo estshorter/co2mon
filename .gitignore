@@ -409,4 +409,3 @@ MigrationBackup/
 # End of https://www.toptal.com/developers/gitignore/api/c++,visualstudio,cmake
 
 build
-logger/configs.json
