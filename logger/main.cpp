@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	for (int i = 0; i <= 1000; i++)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(config["wait_time_seconds"]));
-		auto &&[temp, co2] = dev.ReadData();
+		auto &&[temp, co2] = dev.ReadData(1000);
 
 		//if (temp)
 		//	std::cout << "TMP: " << temp.value().value << std::endl;
