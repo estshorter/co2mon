@@ -94,10 +94,10 @@ int main(int argc, char *argv[])
 		auto temp = dev->GetTemp();
 		auto co2 = dev->GetCo2();
 
-		if (temp)
-			std::cout << "TMP: " << temp.value().value << std::endl;
-		if (co2)
-			std::cout << "CO2: " << co2.value().value << std::endl;
+		// if (temp)
+		// 	std::cout << "TMP: " << temp.value().value << std::endl;
+		// if (co2)
+		// 	std::cout << "CO2: " << co2.value().value << std::endl;
 
 		if (temp && co2)
 		{
