@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
 ## How to build logger
 create `configs.json` in `./logger`.
-```
+``` json
 {
     "channel_id": 12345,
     "write_key": "YOUR_KEY",
