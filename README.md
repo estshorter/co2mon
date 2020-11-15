@@ -16,13 +16,13 @@ int main(int argc, char* argv[]) {
     using namespace std::literals::chrono_literals;
 
     Co2meter dev;
-	try {
-		dev.Open();
-	}
-	catch (std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
+    try {
+        dev.Open();
+    }
+    catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
     // non-blocking monitoring
     dev.StartMonitoring(2s)); // pass monitoring cycle
     while(true){
