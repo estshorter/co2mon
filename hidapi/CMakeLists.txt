@@ -7,3 +7,6 @@ endif()
 
 target_include_directories(hidapi PUBLIC ../include/hidapi/hidapi)
 target_compile_features(hidapi PRIVATE cxx_std_17)
+
+install(TARGETS hidapi 
+        LIBRARY DESTINATION lib)  
