@@ -27,10 +27,10 @@ int main(int argc, char* argv[]) {
     dev.StartMonitoring(2s)); // pass monitoring cycle
     while(true){
         std::this_thread::sleep_for(std::chrono::seconds(30s));
-		auto temp = dev.GetTemp();
-		auto co2 = dev.GetCo2();
-		if (temp) std::cout << "TMP: " << temp.value().value << std::endl;
-		if (co2) std::cout << "CO2: " << co2.value().value << std::endl;
+        auto temp = dev.GetTemp();
+        auto co2 = dev.GetCo2();
+        if (temp) std::cout << "TMP: " << temp.value().value << std::endl;
+        if (co2) std::cout << "CO2: " << co2.value().value << std::endl;
     }
     dev.StopMonitoring();
 }
