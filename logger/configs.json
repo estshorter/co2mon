@@ -1,0 +1,6 @@
+{
+    "channel_id": 12345,
+    "write_key": "YOUR_KEY",
+    "monitoring_cycle_seconds": 2,
+    "reporting_cycle_seconds": 5
+}
