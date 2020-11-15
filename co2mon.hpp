@@ -119,7 +119,7 @@ namespace co2meter
 					ReadData();
 					std::this_thread::sleep_for(observaton_cycle);
 				}
-				}));
+			}));
 		}
 
 		// send internal stop signal to the monitoring thread, and wait to stop it
@@ -162,12 +162,8 @@ namespace co2meter
 			}
 			for (size_t i = 0; i < 8; i++)
 			{
-				results[i] = (data_xor[i] >> 3) | (data_xor[(i - 1 + 8) % 8] << 5);
-			}
-			for (size_t i = 0; i < 8; i++)
-			{
 				auto ctmp = (cstate[i] >> 4) | (cstate[i] << 4);
-				results[i] -= ctmp;
+				results[i] = ((data_xor[i] >> 3) | (data_xor[(i - 1 + 8) % 8] << 5)) - ctmp;
 			}
 			return results;
 		}
