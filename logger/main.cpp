@@ -100,19 +100,19 @@ int main(int argc, char *argv[])
 			send_data["data"][0]["d1"] = format("%.2f", temp.value().value);
 			send_data["data"][0]["d2"] = co2.value().value;
 			//std::cout << send_data.dump() << std::endl;
-			//if (auto res = cli.Post(post_path.c_str(), send_data.dump(), "application/json"))
-			//{
-			//	if (res->status != 200)
-			//	{
-			//		std::cerr << "failed to send data: "
-			//				  << "response code: " << res->status << std::endl;
-			//		;
-			//	}
-			//}
-			//else
-			//{
-			//	std::cerr << "error occurred while sending data: error code: " << res.error() << std::endl;
-			//}
+			if (auto res = cli.Post(post_path.c_str(), send_data.dump(), "application/json"))
+			{
+				if (res->status != 200)
+				{
+					std::cerr << "failed to send data: "
+							  << "response code: " << res->status << std::endl;
+					;
+				}
+			}
+			else
+			{
+				std::cerr << "error occurred while sending data: error code: " << res.error() << std::endl;
+			}
 		}
 	}
 	dev->StopMonitoring();
