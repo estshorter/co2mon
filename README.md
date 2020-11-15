@@ -1,12 +1,12 @@
 # co2monpp
-`co2mon.hpp`
+`co2mon.hpp` is a header only library for co2 monitoring (though it depends on [hidapi](https://github.com/libusb/hidapi) to support multi-platform)
 
 ## How to use
 ``` cpp
 #include <iostream>
 #include <stdexcept>
 
-#include "co2meterpp.h"
+#include "co2mon.hpp"
 
 int main(int argc, char* argv[]) {
     using namespace co2meter;
@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
     Co2meter dev;
 	try {
-		dev->Open();
+		dev.Open();
 	}
 	catch (std::exception& e) {
 		std::cerr << e.what() << std::endl;
@@ -33,7 +33,21 @@ int main(int argc, char* argv[]) {
 }
 ```
 
-## How to build
+## Dependency
+- [hidapi](https://github.com/libusb/hidapi)
+
+## How to build logger
+create `configs.json` in `./logger`.
+```
+{
+    "channel_id": 12345,
+    "write_key": "YOUR_KEY",
+    "monitoring_cycle_seconds": 2,
+    "reporting_cycle_seconds": 5
+} 
+```
+`channel_id` and `write_key` can be obtained from [Ambient](https://ambidata.io/).
+
 ``` sh
 cmake -B build -S .
 cmake --build build
@@ -47,3 +61,6 @@ cmake -DCMAKE_BUILD_TYPE=Release -B build -S .
 ``` sh
 cmake --build build --config Release
 ```
+## Run logger
+Run `co2logger.exe`.
+This program sends sensor data every 30 seconds to [Ambient](https://ambidata.io/).
