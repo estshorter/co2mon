@@ -13,10 +13,14 @@
 
 using namespace co2meter;
 
+static std::unique_ptr<Co2meter> dev = std::make_unique<Co2meter>();
+
 void signal_handler(int sig_num)
 {
+	dev->StopMonitoring();
 	exit(0);
 }
+
 
 //std::string getTimeStamp(const std::chrono::system_clock::time_point time_chrono)
 //{
@@ -54,10 +58,9 @@ int main(int argc, char *argv[])
 	}
 
 	signal(SIGINT, signal_handler);
-	Co2meter dev;
 	try
 	{
-		dev.Open();
+		dev->Open();
 	}
 	catch (std::exception &e)
 	{
@@ -66,7 +69,9 @@ int main(int argc, char *argv[])
 	}
 
 	//std::cout << config.dump() << std::endl;
-	if (config["channel_id"] == nullptr || config["write_key"] == nullptr || config["wait_time_seconds"] == nullptr)
+	if (config["channel_id"] == nullptr || config["write_key"] == nullptr 
+		|| config["monitoring_cycle_seconds"] == nullptr 
+		|| config["reporting_cycle_seconds"] == nullptr)
 	{
 		std::cerr << "contents of the json file is wrong" << std::endl;
 		return 1;
@@ -82,16 +87,17 @@ int main(int argc, char *argv[])
 	nlohmann::json send_data;
 	send_data["writeKey"] = config["write_key"];
 	send_data["data"] = {{{"d1", "20.0"}, {"d2", 1000}}};
-
+	dev->StartMonitoring(std::chrono::seconds(config["monitoring_cycle_seconds"]));
 	for (int i = 0; i <= 1000; i++)
 	{
-		std::this_thread::sleep_for(std::chrono::seconds(config["wait_time_seconds"]));
-		auto &&[temp, co2] = dev.ReadData(1000);
+		std::this_thread::sleep_for(std::chrono::seconds(config["reporting_cycle_seconds"]));
+		auto temp = dev->GetTemp();
+		auto co2 = dev->GetCo2();
 
-		//if (temp)
-		//	std::cout << "TMP: " << temp.value().value << std::endl;
-		//if (co2)
-		//	std::cout << "CO2: " << co2.value().value << std::endl;
+		if (temp)
+			std::cout << "TMP: " << temp.value().value << std::endl;
+		if (co2)
+			std::cout << "CO2: " << co2.value().value << std::endl;
 
 		if (temp && co2)
 		{
@@ -113,5 +119,6 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+	dev->StopMonitoring();
 	return 0;
 }

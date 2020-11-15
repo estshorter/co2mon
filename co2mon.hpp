@@ -4,13 +4,14 @@
 #include <stdexcept>
 #include <array>
 #include <optional>
-#include <tuple>
 #include <sstream>
 #include <string>
 #include <cstdio>
 #include <vector>
 #include <numeric>
 #include <iostream>
+#include <thread>
+#include <mutex>
 
 #include <hidapi.h>
 
@@ -82,7 +83,7 @@ namespace co2meter
 			SendKey();
 		}
 
-		std::pair<std::optional<TimeData<double>>, std::optional<TimeData<int>>> ReadData(const int max_requests = 50)
+		void ReadData(const int max_requests = 50)
 		{
 			bool got_temp = false;
 			bool got_co2 = false;
@@ -100,16 +101,51 @@ namespace co2meter
 				if ((got_temp && got_co2))
 					break;
 			}
-			return std::make_pair(temperature, co2);
+		}
+
+		//read sensor data in a new thread
+		void StartMonitoring(std::chrono::duration<int> observaton_cycle)
+		{
+			if (thread_monitoring)
+				return;
+			thread_monitoring = std::make_unique<std::thread>(std::thread([this, observaton_cycle]() {
+				while (true)
+				{
+					{
+						std::lock_guard<std::mutex> lock(thread_stop_signal.mtx);
+						if (thread_stop_signal.data)
+							return;
+					}
+					ReadData();
+					std::this_thread::sleep_for(observaton_cycle);
+				}
+				}));
+		}
+
+		// send internal stop signal to the monitoring thread, and wait to stop it
+		void StopMonitoring()
+		{
+			if (!thread_monitoring)
+				return;
+
+			{
+				std::lock_guard<std::mutex> lock(thread_stop_signal.mtx);
+				thread_stop_signal.data = true;
+			}
+			thread_monitoring->join();
+			thread_stop_signal.data = false;
+			thread_monitoring.release();
 		}
 
 		std::optional<TimeData<int>> GetCo2()
 		{
-			return co2;
+			std::lock_guard<std::mutex> lock(co2.mtx);
+			return co2.data;
 		}
 		std::optional<TimeData<double>> GetTemp()
 		{
-			return temperature;
+			std::lock_guard<std::mutex> lock(temperature.mtx);
+			return temperature.data;
 		}
 
 	private:
@@ -176,17 +212,19 @@ namespace co2meter
 			if (code == CODE_TEMP)
 			{
 				// Temperature
-				temperature = TimeData((double)value * 0.0625 - 273.15, std::chrono::system_clock::now());
+				std::lock_guard<std::mutex> lock(temperature.mtx);
+				temperature.data = TimeData((double)value * 0.0625 - 273.15, std::chrono::system_clock::now());
 				if constexpr (DEBUG)
 				{
-					std::cout << "MONITOR_THREAD: TMP: " << temperature.value().value << std::endl;
+					std::cout << "MONITOR_THREAD: TMP: " << temperature.data.value().value << std::endl;
 					;
 				}
 			}
 			else if (code == CODE_CO2)
 			{
 				// CO2
-				co2 = TimeData(std::move(value), std::chrono::system_clock::now());
+				std::lock_guard<std::mutex> lock(co2.mtx);
+				co2.data = TimeData(std::move(value), std::chrono::system_clock::now());
 				if constexpr (DEBUG)
 				{
 					std::cout << "MONITOR_THREAD: CO2: " << value << std::endl;
@@ -196,8 +234,10 @@ namespace co2meter
 		}
 
 		std::unique_ptr<hid_device, decltype(&hid_close)> dev;
-		std::optional<TimeData<int>> co2;
-		std::optional<TimeData<double>> temperature;
+		std::unique_ptr<std::thread> thread_monitoring;
+		MutexData<std::optional<TimeData<int>>> co2;
+		MutexData<std::optional<TimeData<double>>> temperature;
+		MutexData<bool> thread_stop_signal;
 		constexpr static int wchar_max_str = 255;
 		constexpr static unsigned short vendor_id = 0x4d9;
 		constexpr static unsigned short product_id = 0xa052;
