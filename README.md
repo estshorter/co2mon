@@ -58,7 +58,7 @@ cmake --build build
 
 ### release build (for gcc or clang)
 ``` sh
-cmake -DCMAKE_BUILD_TYPE=Release -B build -S .
+cmake -DCMAKE_BUILD_TYPE=Release -B build -S . -GNinja
 ```
 ### release build (for MSVC)
 ``` sh
