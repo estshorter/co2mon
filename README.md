@@ -23,12 +23,16 @@ int main(int argc, char* argv[]) {
         std::cerr << e.what() << std::endl;
         return 1;
     }
+    // non-blocking monitoring
+    dev.StartMonitoring(2s)); // pass monitoring cycle
     while(true){
-        std::this_thread::sleep_for(30s);
-        auto&& [temp,co2] = dev.ReadData();
+        std::this_thread::sleep_for(std::chrono::seconds(30s));
+        auto temp = dev.GetTemp();
+        auto co2 = dev.GetCo2();
         if (temp) std::cout << "TMP: " << temp.value().value << std::endl;
         if (co2) std::cout << "CO2: " << co2.value().value << std::endl;
     }
+    dev.StopMonitoring();
 }
 ```
 
@@ -41,7 +45,8 @@ create `configs.json` in `./logger`.
 {
     "channel_id": 12345,
     "write_key": "YOUR_KEY",
-    "wait_time_seconds": 30
+    "monitoring_cycle_seconds": 5,
+    "reporting_cycle_seconds": 30
 } 
 ```
 `channel_id` and `write_key` can be obtained from [Ambient](https://ambidata.io/).
