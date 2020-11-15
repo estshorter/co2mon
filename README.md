@@ -24,13 +24,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     // non-blocking monitoring
-    dev.StartMonitoring(2s)); // pass monitoring cycle
+    dev.StartMonitoring(4s)); // pass monitoring cycle
     while(true){
         std::this_thread::sleep_for(std::chrono::seconds(30s));
         auto temp = dev.GetTemp();
         auto co2 = dev.GetCo2();
         if (temp) std::cout << "TMP: " << temp.value().value << std::endl;
-        if (co2) std::cout << "CO2: " << co2.value().value << std::endl;
+        if (co2)  std::cout << "CO2: " <<  co2.value().value << std::endl;
     }
     dev.StopMonitoring();
 }
@@ -45,7 +45,7 @@ create `configs.json` in `./logger`.
 {
     "channel_id": 12345,
     "write_key": "YOUR_KEY",
-    "monitoring_cycle_seconds": 5,
+    "monitoring_cycle_seconds": 4,
     "reporting_cycle_seconds": 30
 } 
 ```
@@ -59,6 +59,7 @@ cmake --build build
 ### release build (for gcc or clang)
 ``` sh
 cmake -DCMAKE_BUILD_TYPE=Release -B build -S . -GNinja
+cd build && sudo ninja install
 ```
 ### release build (for MSVC)
 ``` sh
