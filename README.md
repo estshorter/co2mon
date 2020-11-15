@@ -45,8 +45,8 @@ create `configs.json` in `./logger`.
 {
     "channel_id": 12345,
     "write_key": "YOUR_KEY",
-    "monitoring_cycle_seconds": 2,
-    "reporting_cycle_seconds": 5
+    "monitoring_cycle_seconds": 5,
+    "reporting_cycle_seconds": 30
 } 
 ```
 `channel_id` and `write_key` can be obtained from [Ambient](https://ambidata.io/).
