@@ -15,11 +15,19 @@ add_custom_command(TARGET co2logger POST_BUILD
          ${PROJECT_SOURCE_DIR}/logger/configs.json 
         $<TARGET_FILE_DIR:co2logger>)              
 
-add_custom_command(TARGET co2logger POST_BUILD 
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different  
-        $<TARGET_FILE_DIR:hidapi>/hidapi.dll    
-        $<TARGET_FILE_DIR:co2logger>)       
         
 install(TARGETS co2logger 
         RUNTIME DESTINATION bin)
-install(FILES ${PROJECT_SOURCE_DIR}/logger/configs.json DESTINATION bin)
+if(WIN32)
+	add_custom_command(TARGET co2logger POST_BUILD 
+	    COMMAND ${CMAKE_COMMAND} -E copy_if_different  
+	        $<TARGET_FILE_DIR:hidapi>/hidapi.dll    
+	        $<TARGET_FILE_DIR:co2logger>)       
+	install(FILES ${PROJECT_SOURCE_DIR}/logger/configs.json DESTINATION bin)
+else()
+	add_custom_command(TARGET co2logger POST_BUILD 
+	    COMMAND ${CMAKE_COMMAND} -E copy_if_different  
+	        $<TARGET_FILE_DIR:hidapi>/libhidapi.so    
+	        $<TARGET_FILE_DIR:co2logger>)       
+	install(FILES ${PROJECT_SOURCE_DIR}/logger/configs.json DESTINATION "/etc/co2mon")
+endif()
