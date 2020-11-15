@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     }
     while(true){
         std::this_thread::sleep_for(30s);
-		auto&& [temp,co2] = dev.ReadData();
+        auto&& [temp,co2] = dev.ReadData();
         if (temp) std::cout << "TMP: " << temp.value().value << std::endl;
         if (co2) std::cout << "CO2: " << co2.value().value << std::endl;
     }
