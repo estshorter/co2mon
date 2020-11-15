@@ -6,16 +6,16 @@
 
 ## How to use
 ``` cpp
+#include <chrono>
 #include <iostream>
 #include <stdexcept>
 
 #include "co2mon.hpp"
 
 int main(int argc, char* argv[]) {
-    using namespace co2meter;
     using namespace std::literals::chrono_literals;
 
-    Co2meter dev;
+    co2meter::Co2meter dev;
     try {
         dev.Open();
     }
@@ -23,16 +23,12 @@ int main(int argc, char* argv[]) {
         std::cerr << e.what() << std::endl;
         return 1;
     }
-    // non-blocking monitoring
-    dev.StartMonitoring(2s)); // pass monitoring cycle
     while(true){
-        std::this_thread::sleep_for(std::chrono::seconds(30s));
-        auto temp = dev.GetTemp();
-        auto co2 = dev.GetCo2();
+        std::this_thread::sleep_for(30s);
+		auto&& [temp,co2] = dev.ReadData();
         if (temp) std::cout << "TMP: " << temp.value().value << std::endl;
         if (co2) std::cout << "CO2: " << co2.value().value << std::endl;
     }
-    dev.StopMonitoring();
 }
 ```
 
@@ -45,8 +41,7 @@ create `configs.json` in `./logger`.
 {
     "channel_id": 12345,
     "write_key": "YOUR_KEY",
-    "monitoring_cycle_seconds": 5,
-    "reporting_cycle_seconds": 30
+    "wait_time_seconds": 30
 } 
 ```
 `channel_id` and `write_key` can be obtained from [Ambient](https://ambidata.io/).
