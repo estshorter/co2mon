@@ -1,5 +1,5 @@
 # co2mon
-`co2mon.hpp` is a header only library for co2 monitoring (though it depends on [hidapi](https://github.com/libusb/hidapi) to support multi-platform).
+`co2mon.hpp` is a header only C++ library for co2 monitoring (though it depends on [hidapi](https://github.com/libusb/hidapi) to support multi-platform).
 
 ## Supported sensor
 - [CO2Mini](https://www.co2meter.com/products/co2mini-co2-indoor-air-quality-monitor) compatible sensors
