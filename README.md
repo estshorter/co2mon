@@ -1,4 +1,4 @@
-# co2monpp
+# co2mon
 `co2mon.hpp` is a header only library for co2 monitoring (though it depends on [hidapi](https://github.com/libusb/hidapi) to support multi-platform).
 
 ## Supported sensor
