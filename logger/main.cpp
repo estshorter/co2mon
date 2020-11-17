@@ -17,8 +17,13 @@ static std::unique_ptr<Co2meter> dev = std::make_unique<Co2meter>();
 
 void signal_handler(int sig_num)
 {
-	dev->StopMonitoring();
-	exit(0);
+	switch (sig_num) {
+	case SIGINT:
+	case SIGTERM:
+		dev->StopMonitoring();
+		exit(0);
+		break;
+	}
 }
 
 
@@ -88,6 +93,9 @@ int main(int argc, char *argv[])
 	send_data["writeKey"] = config["write_key"];
 	send_data["data"] = {{{"d1", "20.0"}, {"d2", 1000}}};
 	dev->StartMonitoring(std::chrono::seconds(config["monitoring_cycle_seconds"]));
+
+	int err_cnt = 0;
+	constexpr int err_threshold = 10;
 	for (int i = 0; i <= 1000; i++)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(config["reporting_cycle_seconds"]));
@@ -111,11 +119,21 @@ int main(int argc, char *argv[])
 					std::cerr << "failed to send data: "
 							  << "response code: " << res->status << std::endl;
 					;
+					err_cnt++;
+				}
+				else {
+					err_cnt = 0;
 				}
 			}
 			else
 			{
 				std::cerr << "error occurred while sending data: error code: " << res.error() << std::endl;
+				err_cnt++;
+			}
+			// network error detected
+			if (err_cnt >= err_threshold) {
+				dev->StopMonitoring();
+				return 1;
 			}
 		}
 	}
