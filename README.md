@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     // non-blocking monitoring
-    dev.StartMonitoring(4s)); // pass monitoring cycle
+    dev.StartMonitoring(4s); // pass monitoring cycle
     while(true){
         std::this_thread::sleep_for(30s);
         auto temp = dev.GetTemp();
