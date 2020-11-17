@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
 	int err_cnt = 0;
 	constexpr int err_threshold = 10;
-	for (int i = 0; i <= 1000; i++)
+	while(true)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(config["reporting_cycle_seconds"]));
 		auto temp = dev->GetTemp();
