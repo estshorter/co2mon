@@ -74,7 +74,7 @@ namespace co2meter
 
 		void Open()
 		{
-			dev = std::unique_ptr<hid_device, decltype(&hid_close)>(hid_open(vendor_id, product_id, NULL), hid_close);
+			dev = std::unique_ptr<hid_device, decltype(&hid_close)>(hid_open(vendor_id, product_id, NULL), [](hid_device* dev) {hid_close(dev); hid_exit(); });
 			if (!dev)
 			{
 				throw std::runtime_error(
