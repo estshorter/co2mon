@@ -118,7 +118,6 @@ int main(int argc, char *argv[])
 				{
 					std::cerr << "failed to send data: "
 							  << "response code: " << res->status << std::endl;
-					;
 					err_cnt++;
 				}
 				else {
