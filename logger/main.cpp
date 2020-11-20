@@ -21,6 +21,7 @@ void signal_handler(int sig_num)
 	case SIGINT:
 	case SIGTERM:
 		dev->StopMonitoring();
+		Co2meter::Exit();
 		exit(0);
 		break;
 	}
@@ -132,10 +133,12 @@ int main(int argc, char *argv[])
 			// network error detected
 			if (err_cnt >= err_threshold) {
 				dev->StopMonitoring();
+				Co2meter::Exit();
 				return 1;
 			}
 		}
 	}
 	dev->StopMonitoring();
+	Co2meter::Exit();
 	return 0;
 }

@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
         if (co2)  std::cout << "CO2: " <<  co2.value().value << std::endl;
     }
     dev.StopMonitoring();
+    co2meter::Co2meter::Exit();
 }
 ```
 
