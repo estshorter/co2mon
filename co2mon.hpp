@@ -74,7 +74,7 @@ namespace co2meter
 
 		void Open()
 		{
-			dev = std::unique_ptr<hid_device, decltype(&hid_close)>(hid_open(vendor_id, product_id, NULL), [](hid_device* dev) {hid_close(dev); hid_exit(); });
+			dev = std::unique_ptr<hid_device, decltype(&hid_close)>(hid_open(vendor_id, product_id, NULL), hid_close);
 			if (!dev)
 			{
 				throw std::runtime_error(
@@ -146,6 +146,13 @@ namespace co2meter
 		{
 			std::lock_guard<std::mutex> lock(temperature.mtx);
 			return temperature.data;
+		}
+
+		// free a global variable in hidapi
+		static void Exit() {
+			if (hid_exit() < 0) {
+				throw std::runtime_error("Error on hid_exit()");
+			}
 		}
 
 	private:
