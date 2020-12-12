@@ -8,7 +8,5 @@ After=network-online.target
 Type=simple
 #ExecStartPre=/bin/sleep 30
 ExecStart=/usr/local/bin/co2logger /etc/co2mon/configs.json
-#ExecStart=tail -f /home/ubuntu/co2mon/src/monitor.js
-#ExecStop=/usr/bin/pkill co2mon/src/monitor.js | exit 0
 Restart=on-failure
 
