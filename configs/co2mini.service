@@ -6,7 +6,6 @@ After=network-online.target
 
 [Service]
 Type=simple
-#ExecStartPre=/bin/sleep 30
 ExecStart=/usr/local/bin/co2logger /etc/co2mon/configs.json
 Restart=on-failure
 
