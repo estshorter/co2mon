@@ -1,0 +1,122 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title>co2mini</title>
+	<script defer src="https://use.fontawesome.com/releases/v5.15.1/js/all.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@latest/css/bulma.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>
+	<style>
+		html,
+		body {
+			background: #ECF0F3;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app">
+		<section class="section">
+			<div class="container">
+				<div class="columns is-mobile">
+					<div class="column is-narrow">
+						<nav class="level">
+							<div class="level-left has-background-white box">
+								<div class="level-item">
+									<span v-bind:style="{color: co2.color}"><i
+											class="fas fa-3x	fa-copyright"></i></span>
+								</div>
+								<div class=" level-item">
+									<div class="content is large">
+										<span class="title is-1"><strong>{{ co2.value
+												}} </strong></span>
+										<span class="subtitle is-3">ppm <br>
+											{{ co2.time }}</span>
+									</div>
+								</div>
+								<div class="level-item">
+								</div>
+							</div>
+						</nav>
+					</div>
+					<div class="column is-narrow">
+						<nav class="level">
+							<div class="level-left has-background-white box">
+								<div class="level-item">
+									<i class="fas fa-3x fa-temperature-low" style="color: #FF3860;"></i>
+								</div>
+								<div class="level-item">
+									<div class="content is large">
+										<span class="title is-1"><strong>{{ temperature.value
+												}} </strong></span>
+										<span class="subtitle is-3"> &#x2103;
+											<br>
+											{{ temperature.time}}</span>
+									</div>
+								</div>
+								<div class="level-item">
+								</div>
+							</div>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</body>
+
+
+<script>
+	var app2 = new Vue({
+		el: '#app',
+		watch: {
+			message: function (newVal, oldVal) {
+				this.error.require = (newVal.length < 1) ? true : false;
+				this.error.tooLong = (newVal.length > 5) ? true : false;
+			}
+		},
+		data: {
+			co2: {
+				value: null,
+				time: null,
+				color: "#23D160"
+			},
+			temperature: {
+				value: null,
+				time: null
+			},
+		},
+		mounted: function () {
+			this.getCo2MiniDataImpl();
+			this.getCo2MiniData();
+		},
+		methods: {
+			unixtimeToString: function (unixtime) {
+				const dateTime = new Date(unixtime * 1000);
+				return dateTime.toLocaleTimeString();
+			},
+			getCo2MiniData: function () {
+				this.intervalid1 = setInterval(this.getCo2MiniDataImpl.bind(this), 2000);
+			},
+			getCo2MiniDataImpl: async function () {
+				const response = await fetch("/api/data", { mode: "cors" })
+				const data = await response.json();
+				this.co2.value = data.co2.value
+				if (this.co2.value >= 1500) {
+					this.co2.color = "#FF3860"
+				} else if (this.co2.value >= 1200) {
+					this.co2.color = "#FFDD57"
+				} else {
+					this.co2.color = "#23D160"
+				}
+				this.temperature.value = data.temperature.value
+				const currentTime = Math.floor(new Date() / 1000)
+				this.temperature.time = String(data.temperature.time - currentTime) + " s"
+				this.co2.time = String(data.co2.time - currentTime) + " s"
+			}
+		}
+	})
+</script>
+
+</html>

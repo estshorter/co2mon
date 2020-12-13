@@ -27,21 +27,36 @@ void signal_handler(int sig_num)
 	}
 }
 
+void server(){
+	using namespace httplib;
+	using namespace std::chrono;
+	Server svr;
 
-//std::string getTimeStamp(const std::chrono::system_clock::time_point time_chrono)
-//{
-//	auto now_c = std::chrono::system_clock::to_time_t(time_chrono);
-//	std::stringstream ss;
-//#ifdef _MSC_VER
-//#pragma warning(push)
-//#pragma warning(disable : 4996)
-//#endif
-//	ss << std::put_time(localtime(&now_c), "%Y-%m-%d %H%M%S");
-//#ifdef _MSC_VER
-//#pragma warning(pop)
-//#endif
-//	return ss.str();
-//}
+	svr.Get("/data", [&](const Request& req, Response& res) {
+		auto temp = dev->GetTemp();
+		nlohmann::json send_data;
+		if (temp) {
+			double temp_value = temp.value().value;
+			std::ostringstream oss;
+			oss << std::fixed << std::setprecision(2) << temp.value().value;
+			int64_t  temp_time = duration_cast<seconds>(temp.value().time.time_since_epoch()).count();
+			send_data["temperature"] = { {"time", temp_time}, {"value", oss.str()} };
+		}else{
+			send_data["temperature"] = { {"time", nullptr}, {"value", nullptr} };
+		}
+		auto co2 = dev->GetCo2();
+		if (co2) {
+			int co2_value = co2.value().value;
+			int64_t  co2_time =  duration_cast<seconds>(co2.value().time.time_since_epoch()).count();
+			send_data["co2"] = { {"time", co2_time}, {"value", co2_value} };
+		}else{
+			send_data["co2"] = { {"time", nullptr}, {"value", nullptr} };
+		}
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_content(send_data.dump(), "application/json");
+			});
+	svr.listen("localhost", 31906);
+}
 
 int main(int argc, char *argv[])
 {
@@ -82,6 +97,8 @@ int main(int argc, char *argv[])
 		std::cerr << "contents of the json file is wrong" << std::endl;
 		return 1;
 	}
+
+	auto th1 = std::thread([]{ server(); });
 
 	int channel_id = config["channel_id"];
 	httplib::Client cli("ambidata.io", 80);
@@ -138,7 +155,4 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	dev->StopMonitoring();
-	Co2meter::Exit();
-	return 0;
 }

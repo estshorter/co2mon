@@ -192,9 +192,7 @@ namespace co2meter
 			DataFormat data;
 			int res = hid_read_timeout(dev.get(), data.data(), data.size(), read_timeout_ms);
 			auto decrypted = data;
-			if (decrypted[4] != 0x0d) {
-				decrypted = Decrypt(data);
-			}
+			decrypted = Decrypt(data);
 			auto checksum = decrypted[3];
 			auto sum = std::reduce(decrypted.begin(), decrypted.begin() + 3);
 			if (decrypted[4] != 0x0d)
