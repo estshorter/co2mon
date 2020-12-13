@@ -70,12 +70,6 @@
 <script>
 	var app2 = new Vue({
 		el: '#app',
-		watch: {
-			message: function (newVal, oldVal) {
-				this.error.require = (newVal.length < 1) ? true : false;
-				this.error.tooLong = (newVal.length > 5) ? true : false;
-			}
-		},
 		data: {
 			co2: {
 				value: null,
