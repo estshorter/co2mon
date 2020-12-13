@@ -11,6 +11,7 @@
 		html,
 		body {
 			background: #ECF0F3;
+			font-family: "Source Han Code JP", "VL Gothic", "Liberation Mono", "Menlo", "Osaka-等幅", "Monaco", "Ubuntu Mono", "DejaVu Sans Mono", "Droid Sans Mono", "Consolas", "Courier New", "Courier", "Bitstream Vera Sans Mono", monospace;
 		}
 	</style>
 </head>
@@ -30,7 +31,7 @@
 								<div class=" level-item">
 									<div class="content is large">
 										<span class="title is-1"><strong>{{ co2.value
-												}} </strong></span>
+												}}</strong></span>
 										<span class="subtitle is-3">ppm <br>
 											{{ co2.time }}</span>
 									</div>
@@ -49,7 +50,7 @@
 								<div class="level-item">
 									<div class="content is large">
 										<span class="title is-1"><strong>{{ temperature.value
-												}} </strong></span>
+												}}</strong></span>
 										<span class="subtitle is-3"> &#x2103;
 											<br>
 											{{ temperature.time}}</span>
@@ -96,7 +97,7 @@
 			getCo2MiniDataImpl: async function () {
 				const response = await fetch("/api/data", { mode: "cors" })
 				const data = await response.json();
-				this.co2.value = data.co2.value
+				this.co2.value = String(data.co2.value).padStart(4, '0')
 				if (this.co2.value >= 1500) {
 					this.co2.color = "#FF3860"
 				} else if (this.co2.value >= 1200) {
@@ -106,8 +107,8 @@
 				}
 				this.temperature.value = data.temperature.value
 				const currentTime = Math.floor(new Date() / 1000)
-				this.temperature.time = String(data.temperature.time - currentTime) + " s"
-				this.co2.time = String(data.co2.time - currentTime) + " s"
+				this.temperature.time = String(data.temperature.time - currentTime).padStart(2, '-') + "s"
+				this.co2.time = String(data.co2.time - currentTime).padStart(2, '-') + "s"
 			}
 		}
 	})
