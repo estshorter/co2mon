@@ -31,7 +31,8 @@
                   <div class="content is large">
                     <span class="title is-1"><strong>{{ co2ValueString }}</strong></span>
                     <span class="subtitle is-3">ppm <br>
-                      {{ co2.updatedBefore }}s <span v-html="diffCo2String"></span></span>
+                      @{{ co2.updatedBefore }}s
+                      <span v-bind:style="{color: diffCo2ToColor}">{{ diffCo2ToString }}</span></span>
                   </div>
                 </div>
               </div>
@@ -41,12 +42,12 @@
             <nav class="level">
               <div class="level-left has-background-white box">
                 <div class="level-item">
-                  <i class="fas fa-3x fa-temperature-low" style="color: #FF3860;"></i>
+                  <i class="fas fa-3x fa-temperature-high" style="color: #FF3860;"></i>
                 </div>
                 <div class="level-item">
                   <div class="content is large">
                     <span class="title is-1"><strong>{{ temperature.value }}</strong></span>
-                    <span class="subtitle is-3"> &#176;C <br> {{ temperature.updatedBefore }}s</span>
+                    <span class="subtitle is-3"> &#176;C <br> @{{ temperature.updatedBefore }}s</span>
                   </div>
                 </div>
               </div>
@@ -85,9 +86,18 @@
       co2ValueString: function () {
         return String(this.co2.value).padStart(4, '0')
       },
-      diffCo2String: function () {
+      diffCo2ToString: function () {
         return this.diffToString(this.co2.diff)
       },
+      diffCo2ToColor: function () {
+        if (this.co2.diff == null) {
+          return null
+        } else if (this.co2.diff > 0) {
+          return "#FF3860"
+        } else {
+          return "#23D160"
+        }
+      }
     },
     methods: {
       unixtimeToString: function (unixtime) {
@@ -114,11 +124,9 @@
         if (diff == null) {
           return null
         } else if (diff > 0) {
-          return '<span style="color: #FF3860;">↑' + String(diff) + "</span>"
-        } else if (diff < 0) {
-          return '<span style="color: #23D160;">↓' + String(-diff) + "</span>"
+          return '↑' + String(diff)
         } else {
-          return "±0"
+          return '↓' + String(-diff)
         }
       },
       getCo2MiniDataImpl: async function () {
