@@ -92,7 +92,7 @@
 				return dateTime.toLocaleTimeString();
 			},
 			getCo2MiniData: function () {
-				this.intervalid1 = setInterval(this.getCo2MiniDataImpl.bind(this), 2000);
+				setInterval(this.getCo2MiniDataImpl.bind(this), 2000);
 			},
 			getCo2MiniDataImpl: async function () {
 				const response = await fetch("/api/data", { mode: "cors" })
