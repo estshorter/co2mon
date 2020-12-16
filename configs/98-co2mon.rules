@@ -1,3 +1,0 @@
-ACTION=="add", SUBSYSTEMS=="usb", ATTRS{idVendor}=="04d9", ATTRS{idProduct}=="a052", SYMLINK+="co2mini", TAG+="systemd", ENV{SYSTEMD_WANTS}+="co2mini.service", GROUP="plugdev", MODE="0660"
-ACTION=="remove", SUBSYSTEM=="hidraw", ENV{DEVLINKS}=="/dev/co2mini", TAG+="systemd"
-# https://unix.stackexchange.com/questions/528803/systemd-doesnt-stop-the-service-when-the-device-is-removed
