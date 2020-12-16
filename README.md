@@ -39,3 +39,6 @@ int main(int argc, char* argv[]) {
 
 ## Dependency
 - [hidapi](https://github.com/libusb/hidapi)
+
+## Example
+[co2logger](https://github.com/estshorter/co2logger)
