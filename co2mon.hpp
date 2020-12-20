@@ -221,7 +221,6 @@ namespace co2meter
 				if constexpr (DEBUG)
 				{
 					std::cout << "MONITOR_THREAD: TMP: " << temperature.data.value().value << std::endl;
-					;
 				}
 			}
 			else if (code == CODE_CO2)
