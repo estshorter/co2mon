@@ -104,7 +104,7 @@ namespace co2meter
 		}
 
 		//read sensor data in a new thread
-		void StartMonitoring(std::chrono::duration<int> observaton_cycle)
+		void StartMonitoring(const std::chrono::duration<int> &observaton_cycle)
 		{
 			if (thread_monitoring)
 				return;
